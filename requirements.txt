@@ -1,0 +1,10 @@
+duckduckgo-search
+openai
+python-dotenv
+google-search-results
+SpeechRecognition
+gTTs
+elevenlabs
+pyaudio
+pvporcupine
+pygame

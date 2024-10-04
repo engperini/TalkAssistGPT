@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Interface</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: space-between;
+            background-color: black;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+
+        #left-side {
+            flex: 3;
+            position: relative;
+            overflow: hidden; /* Impede que a imagem de fundo se expanda além do container */
+            align-items: center;
+            justify-content: center;
+            color: white;
+            
+        }
+
+        #left-side img {
+            width: 100%; /* A imagem ocupará 100% da largura do #left-side */
+            height: 100%;  /* auto Mantém a proporção original da imagem */
+            object-fit: cover; /* Redimensiona e corta a imagem para ajustar ao container */
+        }
+
+        #ai-response {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center; /* Alinha o texto ao centro */
+            font-size: 50px;
+        }
+
+        #right-side {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            padding: 20px;
+        }
+
+        #mic-button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            font-size: 60px;
+            cursor: pointer;
+        }
+
+        #clock {
+            font-size: 60px;
+            margin-bottom: 20px;
+        }
+
+       
+    </style>
+</head>
+<body>
+
+    <div id="left-side">
+        <!-- Placeholder for AI response (animated GIF) -->
+        <img src="static/background.jpg" alt="Background Image"> 
+        <!-- Div para exibir a resposta da AI -->
+        <div id="ai-response">
+            <p id="ai-response-content">{{ ai_response }}</p>
+        </div>
+        
+        
+    </div>
+    <div id="right-side">
+        <!-- Clock -->
+        <div id="clock">00:00:00</div>
+        <!-- Microphone Button -->
+        <button id="mic-button" >Jarvis</button>
+
+        <!-- GIF animado (inicialmente oculto) -->
+        <img id="animated-gif" src="static/speakgif.gif" alt="Animated GIF" style="display: none;width: 100%; height: 50%;">
+
+        
+    </div>
+
+    <!-- Add this script section at the end of your HTML body -->
+    <script>
+         // Função para exibir o GIF animado
+        function showAnimatedGif() {
+            const animatedGif = document.getElementById("animated-gif");
+            animatedGif.style.display = "block";
+
+        }
+
+        // Exemplo: Mostrar o GIF animado quando o botão for clicado
+        document.getElementById("mic-button").addEventListener("click", function () {
+            showAnimatedGif();
+        });
+
+         // Crie uma conexão EventSource com o servidor
+        var eventSource = new EventSource("/ai_response_stream"); // Substitua pelo caminho correto para sua rota no servidor
+        // Ouça eventos do servidor
+        eventSource.onmessage = function (event) {
+            //var responseData = JSON.parse(event.data);
+            var aiResponseContent = document.getElementById('ai-response-content');
+            aiResponseContent.textContent = event.data //responseData.response; // Atualize o conteúdo do elemento HTML
+               
+        };
+
+        // Function to update the clock
+        function updateClock() {
+            const clockElement = document.getElementById("clock");
+            const now = new Date();
+            const hours = now.getHours().toString().padStart(2, '0');
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const seconds = now.getSeconds().toString().padStart(2, '0');
+            clockElement.textContent = `${hours}:${minutes}:${seconds}`;
+        }
+
+        // Update the clock every second
+        setInterval(updateClock, 1000);
+
+        // Initial call to set the clock
+        updateClock();
+    </script>
+</body>
+</html>
